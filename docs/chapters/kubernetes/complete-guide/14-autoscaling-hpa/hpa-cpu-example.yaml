@@ -1,0 +1,112 @@
+---
+# Deployment with resource requests (required for HPA)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hpa-demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hpa-demo-app
+  template:
+    metadata:
+      labels:
+        app: hpa-demo-app
+    spec:
+      containers:
+      - name: app
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m      # Required for CPU-based HPA
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          # Create a CPU-intensive endpoint
+          cat > /etc/nginx/conf.d/default.conf << 'EOF'
+          server {
+              listen 80;
+              location / {
+                  return 200 "HPA Demo App - Pod: $hostname\n";
+                  add_header Content-Type text/plain;
+              }
+              location /cpu-load {
+                  return 200 "Generating CPU load...\n";
+                  add_header Content-Type text/plain;
+              }
+          }
+          EOF
+          
+          # Start background CPU load generator
+          (while true; do
+            if [ -f /tmp/load ]; then
+              for i in $(seq 1 1000); do
+                echo "scale=5000; 4*a(1)" | bc -l > /dev/null 2>&1
+              done
+            fi
+            sleep 1
+          done) &
+          
+          nginx -g 'daemon off;'
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: hpa-demo-service
+spec:
+  selector:
+    app: hpa-demo-app
+  ports:
+  - port: 80
+    targetPort: 80
+  type: NodePort
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-demo-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hpa-demo-app
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50  # Scale when CPU > 50%
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80  # Scale when Memory > 80%
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60

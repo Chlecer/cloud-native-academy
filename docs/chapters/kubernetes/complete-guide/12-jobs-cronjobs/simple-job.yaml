@@ -1,0 +1,73 @@
+---
+# Simple Job - runs once to completion
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: simple-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: job-container
+        image: busybox
+        command: ["sh", "-c"]
+        args:
+        - |
+          echo "Job started at $(date)"
+          echo "Processing data..."
+          for i in $(seq 1 10); do
+            echo "Processing item $i"
+            sleep 1
+          done
+          echo "Job completed at $(date)"
+      restartPolicy: Never
+  backoffLimit: 4
+
+---
+# Parallel Job - multiple pods working together
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parallel-job
+spec:
+  parallelism: 3        # Run 3 pods in parallel
+  completions: 6        # Need 6 successful completions
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: busybox
+        command: ["sh", "-c"]
+        args:
+        - |
+          WORKER_ID=$(hostname | cut -d'-' -f3)
+          echo "Worker $WORKER_ID started at $(date)"
+          sleep $((RANDOM % 10 + 5))  # Random work time
+          echo "Worker $WORKER_ID completed at $(date)"
+      restartPolicy: Never
+
+---
+# CronJob - scheduled recurring task
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scheduled-job
+spec:
+  schedule: "*/2 * * * *"  # Every 2 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: scheduled-task
+            image: busybox
+            command: ["sh", "-c"]
+            args:
+            - |
+              echo "Scheduled task running at $(date)"
+              echo "Performing maintenance..."
+              sleep 5
+              echo "Maintenance completed"
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1

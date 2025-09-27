@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          # Create simple HTML with pod info
+          echo "<h1>Kubernetes Service Demo</h1>" > /usr/share/nginx/html/index.html
+          echo "<p><strong>Pod Name:</strong> $POD_NAME</p>" >> /usr/share/nginx/html/index.html
+          echo "<p><strong>Pod IP:</strong> $POD_IP</p>" >> /usr/share/nginx/html/index.html
+          echo "<p><strong>Time:</strong> $(date)</p>" >> /usr/share/nginx/html/index.html
+          echo "<hr>" >> /usr/share/nginx/html/index.html
+          echo "<p>Refresh to see load balancing in action!</p>" >> /usr/share/nginx/html/index.html
+          # Start nginx
+          nginx -g 'daemon off;'
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+  labels:
+    app: webapp
+spec:
+  type: NodePort
+  selector:
+    app: webapp
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30090
+    protocol: TCP
+    name: http

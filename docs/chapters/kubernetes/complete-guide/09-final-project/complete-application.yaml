@@ -1,0 +1,339 @@
+---
+# Database ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+data:
+  POSTGRES_DB: "webapp"
+  POSTGRES_USER: "webuser"
+
+---
+# Database Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+data:
+  POSTGRES_PASSWORD: d2VicGFzcw==  # webpass in base64
+
+---
+# Database PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+# PostgreSQL Database
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13-alpine
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - configMapRef:
+            name: postgres-config
+        - secretRef:
+            name: postgres-secret
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - webuser
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+
+---
+# Database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+
+---
+# Redis Cache
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+
+---
+# Backend API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api
+    spec:
+      containers:
+      - name: api
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://webuser:webpass@postgres-service:5432/webapp"
+        - name: REDIS_URL
+          value: "redis://redis-service:6379"
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          cat > /usr/share/nginx/html/index.html << 'EOF'
+          {
+            "status": "healthy",
+            "service": "backend-api",
+            "database": "connected",
+            "cache": "connected",
+            "timestamp": "$(date -Iseconds)"
+          }
+          EOF
+          nginx -g 'daemon off;'
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend-api
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+# Frontend Application
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          cat > /usr/share/nginx/html/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Kubernetes Complete Application</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+                  .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                  h1 { color: #326ce5; text-align: center; }
+                  .status { background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+                  .component { background: #f0f8ff; padding: 10px; margin: 10px 0; border-left: 4px solid #326ce5; }
+                  button { background: #326ce5; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+                  button:hover { background: #2558c7; }
+                  #api-response { background: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px; font-family: monospace; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>🎉 Kubernetes Complete Application</h1>
+                  
+                  <div class="status">
+                      <h3>✅ Application Status: Running</h3>
+                      <p>Congratulations! You've successfully deployed a complete Kubernetes application.</p>
+                  </div>
+                  
+                  <div class="component">
+                      <h4>🗄️ Database Layer</h4>
+                      <p>PostgreSQL with persistent storage</p>
+                  </div>
+                  
+                  <div class="component">
+                      <h4>⚡ Cache Layer</h4>
+                      <p>Redis for high-performance caching</p>
+                  </div>
+                  
+                  <div class="component">
+                      <h4>🔧 Backend API</h4>
+                      <p>REST API service with health checks</p>
+                      <button onclick="testAPI()">Test Backend API</button>
+                  </div>
+                  
+                  <div class="component">
+                      <h4>🌐 Frontend</h4>
+                      <p>This web interface you're viewing</p>
+                  </div>
+                  
+                  <div id="api-response"></div>
+                  
+                  <div style="text-align: center; margin-top: 30px;">
+                      <h3>🎓 You are now a Kubernetes Expert!</h3>
+                      <p>You've mastered: Pods, Services, Deployments, ConfigMaps, Secrets, Volumes, Networking, and Monitoring</p>
+                  </div>
+              </div>
+              
+              <script>
+                  function testAPI() {
+                      fetch('/api/')
+                          .then(response => response.json())
+                          .then(data => {
+                              document.getElementById('api-response').innerHTML = 
+                                  '<h4>Backend API Response:</h4><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                          })
+                          .catch(error => {
+                              document.getElementById('api-response').innerHTML = 
+                                  '<h4>API Test:</h4><p style="color: red;">Error: ' + error + '</p>';
+                          });
+                  }
+              </script>
+          </body>
+          </html>
+          EOF
+          
+          cat > /etc/nginx/conf.d/default.conf << 'EOF'
+          server {
+              listen 80;
+              server_name localhost;
+              
+              location / {
+                  root /usr/share/nginx/html;
+                  index index.html;
+              }
+              
+              location /api/ {
+                  proxy_pass http://backend-service/;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+              }
+          }
+          EOF
+          
+          nginx -g 'daemon off;'
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30200
+  type: NodePort

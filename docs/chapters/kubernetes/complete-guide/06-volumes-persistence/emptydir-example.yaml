@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-demo
+spec:
+  containers:
+  - name: writer
+    image: busybox
+    command: ['sh', '-c', 'while true; do echo "$(date): Writer container" >> /shared/log.txt; sleep 10; done']
+    volumeMounts:
+    - name: shared-storage
+      mountPath: /shared
+  
+  - name: reader
+    image: busybox
+    command: ['sh', '-c', 'while true; do echo "Reading log:"; tail -5 /shared/log.txt 2>/dev/null || echo "No log yet"; sleep 15; done']
+    volumeMounts:
+    - name: shared-storage
+      mountPath: /shared
+  
+  volumes:
+  - name: shared-storage
+    emptyDir: {}

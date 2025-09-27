@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webapp-example
+  labels:
+    app: webapp
+    version: v1
+    environment: development
+spec:
+  containers:
+  - name: web-server
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+      name: http
+    env:
+    - name: ENVIRONMENT
+      value: "development"
+    - name: VERSION
+      value: "1.0"
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+  restartPolicy: Always

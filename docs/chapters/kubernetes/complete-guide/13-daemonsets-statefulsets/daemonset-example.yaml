@@ -1,0 +1,53 @@
+---
+# DaemonSet - runs one pod on every node
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-monitor
+  labels:
+    app: node-monitor
+spec:
+  selector:
+    matchLabels:
+      app: node-monitor
+  template:
+    metadata:
+      labels:
+        app: node-monitor
+    spec:
+      containers:
+      - name: monitor
+        image: busybox
+        command: ["sh", "-c"]
+        args:
+        - |
+          while true; do
+            echo "$(date): Monitoring node $(hostname) - $(cat /host/proc/version | cut -d' ' -f1-3)"
+            echo "Node uptime: $(cat /host/proc/uptime | cut -d' ' -f1) seconds"
+            echo "Memory info: $(cat /host/proc/meminfo | grep MemTotal)"
+            echo "---"
+            sleep 30
+          done
+        volumeMounts:
+        - name: proc
+          mountPath: /host/proc
+          readOnly: true
+        - name: sys
+          mountPath: /host/sys
+          readOnly: true
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+      hostNetwork: true
+      hostPID: true

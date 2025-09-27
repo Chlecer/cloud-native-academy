@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 3
+  
+  # Update strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1      # Maximum 1 pod can be unavailable
+      maxSurge: 1           # Maximum 1 extra pod during update
+  
+  selector:
+    matchLabels:
+      app: webapp
+      version: v2           # Change to v2
+  
+  template:
+    metadata:
+      labels:
+        app: webapp
+        version: v2         # New version
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.22-alpine  # New image version
+        ports:
+        - containerPort: 80
+        
+        # Variable to identify version
+        env:
+        - name: VERSION
+          value: "v2.0"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        
+        # Customize page to show version
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          echo "<h1>Web Application - Version $VERSION</h1>" > /usr/share/nginx/html/index.html
+          echo "<p>Pod: $POD_NAME</p>" >> /usr/share/nginx/html/index.html
+          echo "<p>Timestamp: $(date)</p>" >> /usr/share/nginx/html/index.html
+          echo "<p>Nginx: $(nginx -v 2>&1)</p>" >> /usr/share/nginx/html/index.html
+          nginx -g 'daemon off;'
+        
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5

@@ -1,0 +1,71 @@
+---
+# StatefulSet - for stateful applications
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web-stateful
+spec:
+  serviceName: "web-stateful-service"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-stateful
+  template:
+    metadata:
+      labels:
+        app: web-stateful
+    spec:
+      containers:
+      - name: web
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          echo "<h1>StatefulSet Pod: $HOSTNAME</h1>" > /usr/share/nginx/html/index.html
+          echo "<p>Ordinal: $(echo $HOSTNAME | cut -d'-' -f3)</p>" >> /usr/share/nginx/html/index.html
+          echo "<p>Service: web-stateful-service</p>" >> /usr/share/nginx/html/index.html
+          echo "<p>Started: $(date)</p>" >> /usr/share/nginx/html/index.html
+          nginx -g 'daemon off;'
+        volumeMounts:
+        - name: web-storage
+          mountPath: /usr/share/nginx/html/data
+  volumeClaimTemplates:
+  - metadata:
+      name: web-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 100Mi
+
+---
+# Headless Service for StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-stateful-service
+spec:
+  clusterIP: None  # Headless service
+  selector:
+    app: web-stateful
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+# Regular Service for external access
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-stateful-external
+spec:
+  type: NodePort
+  selector:
+    app: web-stateful
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30300

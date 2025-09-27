@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+  labels:
+    app: web
+spec:
+  type: ClusterIP  # Default - internal access only
+  selector:
+    app: web       # Selects pods with label app=web
+  ports:
+  - port: 80       # Service port
+    targetPort: 80 # Container port
+    protocol: TCP
+    name: http

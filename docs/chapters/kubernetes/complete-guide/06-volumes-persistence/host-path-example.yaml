@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-persistent-logs
+  labels:
+    app: simple-persistent
+spec:
+  containers:
+  # Main container - web application
+  - name: web-app
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: host-logs
+      mountPath: /var/log/nginx
+
+  # Sidecar container - log collector
+  - name: log-collector
+    image: busybox
+    command: ["sh", "-c"]
+    args:
+    - |
+      while true; do
+        echo "$(date): Log collector running..." >> /logs/collector.log
+        echo "Pod IP: $(hostname -i)" >> /logs/collector.log
+        echo "Files in nginx logs:" >> /logs/collector.log
+        ls -la /logs/ >> /logs/collector.log
+        echo "---" >> /logs/collector.log
+        sleep 15
+      done
+    volumeMounts:
+    - name: host-logs
+      mountPath: /logs
+
+  volumes:
+  - name: host-logs
+    hostPath:
+      path: /run/desktop/mnt/host/c/Users/jeanp/Desktop/BAI_PROJECTOS/mongo_boot/cloud-native-academy/logs
+      type: DirectoryOrCreate

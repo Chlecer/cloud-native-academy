@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  hostPath:
+    path: /tmp/k8s-data
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: local-storage
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: persistent-pod
+spec:
+  containers:
+  - name: app
+    image: nginx:alpine
+    volumeMounts:
+    - name: persistent-storage
+      mountPath: /usr/share/nginx/html
+    command: ["/bin/sh"]
+    args:
+    - -c
+    - |
+      echo "<h1>Persistent Storage Demo</h1>" > /usr/share/nginx/html/index.html
+      echo "<p>This data persists even if pod is deleted!</p>" >> /usr/share/nginx/html/index.html
+      echo "<p>Created at: $(date)</p>" >> /usr/share/nginx/html/index.html
+      nginx -g 'daemon off;'
+  
+  volumes:
+  - name: persistent-storage
+    persistentVolumeClaim:
+      claimName: local-pvc
