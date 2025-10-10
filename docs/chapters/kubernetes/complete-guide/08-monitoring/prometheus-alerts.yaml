@@ -1,0 +1,180 @@
+# E-commerce Specific Alert Rules
+# Real alerts for payment processing, user authentication, and order management
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: monitoring
+data:
+  ecommerce-alerts.yml: |
+    groups:
+    - name: ecommerce.payment.rules
+      rules:
+      
+      # CRITICAL: Payment Service Down
+      - alert: PaymentServiceDown
+        expr: up{job="payment-service"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          team: payments
+          pager: "true"
+          impact: "revenue"
+        annotations:
+          summary: "🚨 PAYMENT SERVICE DOWN - Revenue Impact!"
+          description: "Payment service has been down for 30+ seconds. Customers cannot complete purchases."
+          impact: "Estimated revenue loss: ${{ $value | humanize }}k per minute"
+          action: "1. Check payment-service pods 2. Verify Stripe API connectivity 3. Check database connection"
+          runbook_url: "https://runbooks.ecommerce.com/payment-service-down"
+      
+      # CRITICAL: High Payment Error Rate
+      - alert: HighPaymentErrorRate
+        expr: |
+          (
+            rate(payment_requests_total{status="error"}[5m]) /
+            rate(payment_requests_total[5m])
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          team: payments
+          pager: "true"
+        annotations:
+          summary: "🔥 High Payment Error Rate: {{ $value | printf \"%.1f\" }}%"
+          description: "Payment error rate is {{ $value | printf \"%.1f\" }}% (threshold: 5%)"
+          impact: "Failed transactions affecting customer experience and revenue"
+          action: "Check Stripe API status, database connectivity, and payment service logs"
+      
+      # WARNING: Payment Processing Latency
+      - alert: HighPaymentLatency
+        expr: |
+          histogram_quantile(0.95, 
+            rate(payment_duration_seconds_bucket{job="payment-service"}[5m])
+          ) > 3.0
+        for: 5m
+        labels:
+          severity: warning
+          team: payments
+        annotations:
+          summary: "⚠️ High Payment Processing Latency"
+          description: "95th percentile payment latency is {{ $value | printf \"%.2f\" }}s (threshold: 3s)"
+          impact: "Slow checkout experience may increase cart abandonment"
+          action: "Check database performance and Stripe API response times"
+      
+      # CRITICAL: User Authentication Service Down
+      - alert: UserServiceDown
+        expr: up{job="user-service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+          pager: "true"
+        annotations:
+          summary: "🚨 USER SERVICE DOWN"
+          description: "User authentication service has been down for 1+ minute"
+          impact: "Users cannot login, register, or access accounts"
+          action: "Check user-service pods and database connectivity"
+      
+      # WARNING: High Login Error Rate
+      - alert: HighLoginErrorRate
+        expr: |
+          (
+            rate(login_attempts_total{status="failed"}[5m]) /
+            rate(login_attempts_total[5m])
+          ) * 100 > 15
+        for: 3m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "🔐 High Login Error Rate: {{ $value | printf \"%.1f\" }}%"
+          description: "Login failure rate is {{ $value | printf \"%.1f\" }}% (threshold: 15%)"
+          impact: "Possible brute force attack or authentication system issues"
+          action: "Check for suspicious IP patterns and authentication service health"
+      
+      # CRITICAL: Database Connection Pool Exhaustion
+      - alert: DatabaseConnectionPoolExhaustion
+        expr: |
+          (
+            db_connection_pool_active /
+            db_connection_pool_max
+          ) * 100 > 90
+        for: 2m
+        labels:
+          severity: critical
+          team: database
+        annotations:
+          summary: "💾 Database Connection Pool Nearly Exhausted"
+          description: "{{ $labels.service }} is using {{ $value | printf \"%.1f\" }}% of database connections"
+          impact: "New requests may fail due to connection unavailability"
+          action: "Scale database connections or investigate connection leaks"
+      
+      # WARNING: High Memory Usage
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            container_memory_working_set_bytes{pod=~"payment-service.*|user-service.*"} /
+            container_spec_memory_limit_bytes{pod=~"payment-service.*|user-service.*"}
+          ) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "🧠 High Memory Usage: {{ $value | printf \"%.1f\" }}%"
+          description: "{{ $labels.pod }} memory usage is {{ $value | printf \"%.1f\" }}% (threshold: 80%)"
+          impact: "Risk of OOM kills and service instability"
+          action: "Consider scaling up or investigating memory leaks"
+      
+      # BUSINESS METRIC: Low Conversion Rate
+      - alert: LowConversionRate
+        expr: |
+          (
+            rate(orders_completed_total[15m]) /
+            rate(cart_created_total[15m])
+          ) * 100 < 2.5
+        for: 10m
+        labels:
+          severity: warning
+          team: business
+        annotations:
+          summary: "📉 Low Conversion Rate: {{ $value | printf \"%.2f\" }}%"
+          description: "Conversion rate dropped to {{ $value | printf \"%.2f\" }}% (normal: >2.5%)"
+          impact: "Potential revenue loss due to checkout issues"
+          action: "Check payment flow, website performance, and user experience"
+      
+      # BUSINESS METRIC: High Cart Abandonment
+      - alert: HighCartAbandonmentRate
+        expr: |
+          (
+            1 - (
+              rate(checkout_completed_total[15m]) /
+              rate(cart_created_total[15m])
+            )
+          ) * 100 > 70
+        for: 10m
+        labels:
+          severity: warning
+          team: business
+        annotations:
+          summary: "🛒 High Cart Abandonment: {{ $value | printf \"%.1f\" }}%"
+          description: "Cart abandonment rate is {{ $value | printf \"%.1f\" }}% (threshold: 70%)"
+          impact: "Lost revenue opportunity"
+          action: "Analyze checkout flow and payment processing performance"
+      
+      # INFRASTRUCTURE: Node Disk Space Low
+      - alert: NodeDiskSpaceLow
+        expr: |
+          (
+            node_filesystem_avail_bytes{mountpoint="/"} /
+            node_filesystem_size_bytes{mountpoint="/"}
+          ) * 100 < 15
+        for: 5m
+        labels:
+          severity: warning
+          team: infrastructure
+        annotations:
+          summary: "💽 Node Disk Space Low: {{ $value | printf \"%.1f\" }}%"
+          description: "Node {{ $labels.instance }} has {{ $value | printf \"%.1f\" }}% disk space remaining"
+          impact: "Risk of service failures due to disk space exhaustion"
+          action: "Clean up logs or expand disk capacity"
