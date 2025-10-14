@@ -1,158 +1,158 @@
-# 🏗️ Padrões Terraform Enterprise - Domínio de Infraestrutura como Código
+# 🏗️ Enterprise Terraform Patterns - Infrastructure as Code Mastery
 
-## 🤔 O que é o Terraform?
+## 🤔 What is Terraform?
 
-**Terraform é como um sistema de plantas para infraestrutura cloud.**
+**Terraform is like a blueprint system for cloud infrastructure.**
 
 ```
-🖱️ FORMA TRADICIONAL        📝 FORMA TERRAFORM
+🖱️ TRADITIONAL WAY          📝 TERRAFORM WAY
 ┌─────────────────┐         ┌─────────────────┐
-│ Clicar AWS      │         │ Escrever Código │
-│ Console         │   VS    │ Uma Vez         │
+│ Click AWS       │         │ Write Code      │
+│ Console         │   VS    │ Once            │
 │ ↓               │         │ ↓               │
-│ Trabalho Manual │         │ Automático      │
+│ Manual Work     │         │ Automatic       │
 │ ↓               │         │ ↓               │
-│ Erros & Caos    │         │ Cópia Perfeita  │
+│ Errors & Chaos  │         │ Perfect Copy    │
 └─────────────────┘         └─────────────────┘
 ```
 
-### 🏠 Analogia do Mundo Real
+### 🏠 Real World Analogy
 ```
-🔨 CONSTRUÇÃO TRADICIONAL      📋 CONSTRUÇÃO TERRAFORM
+🔨 TRADITIONAL CONSTRUCTION    📋 TERRAFORM CONSTRUCTION
 ┌─────────────────────────┐   ┌─────────────────────────┐
-│ Ir ao local diariamente │   │ Criar planta uma vez    │
-│ Dizer aos trabalhadores │   │ Qualquer equipa constrói│
-│ Esperar que se lembrem  │   │ Perfeito sempre         │
-│ Diferente sempre        │   │ Casas idênticas         │
+│ Go to site daily        │   │ Create blueprint once   │
+│ Tell workers what to do │   │ Any team can build      │
+│ Hope they remember      │   │ Perfect every time      │
+│ Different every time    │   │ Identical houses        │
 └─────────────────────────┘   └─────────────────────────┘
 ```
 
-### 🏢 Histórias de Sucesso Fortune 500
+### 🏢 Fortune 500 Success Stories
 ```
-🎬 NETFLIX     📊 100,000+ recursos AWS geridos por código
-🏠 AIRBNB      🚀 1,000+ ambientes deployados diariamente  
-🚗 UBER        🌍 25+ regiões provisionadas consistentemente
-🛒 SHOPIFY     💰 Tráfego Black Friday gerido automaticamente
+🎬 NETFLIX     📊 100,000+ AWS resources managed by code
+🏠 AIRBNB      🚀 1,000+ environments deployed daily  
+🚗 UBER        🌍 25+ regions provisioned consistently
+🛒 SHOPIFY     💰 Black Friday traffic managed automatically
 ```
 
-## 🌐 O que é uma VPC?
+## 🌐 What is a VPC?
 
-**VPC = O teu andar privado no edifício AWS**
+**VPC = Your private floor in the AWS building**
 
 ```
         🌍 INTERNET
            |
     ┌─────────────────┐
-    │  EDIFÍCIO AWS   │
+    │  AWS BUILDING   │
     │                 │
-    │ ┌─────────────┐ │ ← 🏢 Outras empresas
-    │ │ TEU ANDAR   │ │ ← 🎯 A TUA VPC
+    │ ┌─────────────┐ │ ← 🏢 Other companies
+    │ │ YOUR FLOOR  │ │ ← 🎯 YOUR VPC
     │ │             │ │
-    │ │ 🌐📱💻      │ │ ← 🔓 Salas públicas (web servers)
-    │ │ 🔒🖥️⚙️      │ │ ← 🔒 Salas privadas (apps)
-    │ │ 🔐💾🗄️      │ │ ← 🔐 Cofre (bases de dados)
+    │ │ 🌐📱💻      │ │ ← 🔓 Public rooms (web servers)
+    │ │ 🔒🖥️⚙️      │ │ ← 🔒 Private rooms (apps)
+    │ │ 🔐💾🗄️      │ │ ← 🔐 Vault (databases)
     │ └─────────────┘ │
     └─────────────────┘
 ```
 
-### 🏗️ Componentes VPC Visual
+### 🏗️ VPC Components Visual
 ```
-🏢 VPC              = O teu andar privado
-🚪 Subnets          = Salas individuais
-🚪 Internet Gateway = Entrada principal da rua
-🚪 NAT Gateway      = Porta traseira segura
-🗺️ Route Tables     = Sinais de direção
+🏢 VPC              = Your private floor
+🚪 Subnets          = Individual rooms
+🚪 Internet Gateway = Main street entrance
+🚪 NAT Gateway      = Secure back door
+🗺️ Route Tables     = Direction signs
 ```
 
-### 🎯 Porquê Esta Estrutura?
+### 🎯 Why This Structure?
 ```
-🌐 SUBNETS PÚBLICAS  🔒 SUBNETS PRIVADAS   🔐 SUBNETS DATABASES
+🌐 PUBLIC SUBNETS    🔒 PRIVATE SUBNETS    🔐 DATABASE SUBNETS
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│ 🌍 Internet     │  │ 🛡️ Protegidas   │  │ 🔐 Ultra-seguras│
-│ 📱 Web servers  │  │ ⚙️ Aplicações    │  │ 💾 Bases dados  │
-│ 🔓 Acesso público│ │ 🔒 Sem acesso   │  │ 🔐 Só apps      │
-│                 │  │    direto       │  │                 │
+│ 🌍 Internet     │  │ 🛡️ Protected    │  │ 🔐 Ultra-secure │
+│ 📱 Web servers  │  │ ⚙️ Applications  │  │ 💾 Databases    │
+│ 🔓 Public access│  │ 🔒 No direct    │  │ 🔐 Apps only    │
+│                 │  │    access       │  │                 │
 └─────────────────┘  └─────────────────┘  └─────────────────┘
 ```
 
-## 🧩 O que são Módulos Terraform?
+## 🧩 What are Terraform Modules?
 
-**Módulos = Manuais LEGO para infraestrutura**
+**Modules = LEGO instruction manuals for infrastructure**
 
 ```
-🧱 PEÇAS INDIVIDUAIS        📦 MÓDULO LEGO
+🧱 INDIVIDUAL PIECES        📦 LEGO MODULE
 ┌─────────────────────┐     ┌─────────────────────┐
-│ 🔩 Parafuso a       │     │ 📋 Seguir manual    │
-│    parafuso         │ VS  │ 🏗️ Resultado perfeito│
-│ 🔧 Porca a porca    │     │ ✅ Igual sempre     │
-│ ❌ Diferente sempre │     │ 🚀 Super rápido     │
+│ 🔩 Screw by         │     │ 📋 Follow manual    │
+│    screw            │ VS  │ 🏗️ Perfect result   │
+│ 🔧 Bolt by bolt     │     │ ✅ Same every time  │
+│ ❌ Different always │     │ 🚀 Super fast       │
 └─────────────────────┘     └─────────────────────┘
 ```
 
-### 🎯 Porquê os Módulos São Fixes
+### 🎯 Why Modules Are Amazing
 ```
-✅ CONSISTÊNCIA  = Mesmo resultado em todo lado
-🚀 VELOCIDADE    = Não reinventar a roda  
-🏆 QUALIDADE     = 1 testado vs 100 custom
-👥 TRABALHO      = Todos usam os mesmos "LEGO sets"
+✅ CONSISTENCY  = Same result everywhere
+🚀 SPEED        = Don't reinvent the wheel  
+🏆 QUALITY      = 1 tested vs 100 custom
+👥 TEAMWORK     = Everyone uses same "LEGO sets"
 ```
 
-### Requisitos Enterprise
-- **Gestão multi-ambiente** (dev/staging/prod)
-- **Colaboração de equipa** sem conflitos
-- **Gestão de estado** à escala
-- **Segurança** e compliance
-- **Otimização de custos** e governança
+### Enterprise Requirements
+- **Multi-environment management** (dev/staging/prod)
+- **Team collaboration** without conflicts
+- **State management** at scale
+- **Security** and compliance
+- **Cost optimization** and governance
 
-## 📁 Estrutura Terraform Enterprise
+## 📁 Enterprise Terraform Structure
 
-**É assim que as empresas Fortune 500 organizam o código Terraform.** Pensa nisto como organizar uma empresa de construção massiva:
+**This is how Fortune 500 companies organize Terraform code.** Think of this as organizing a massive construction company:
 
 ```
 terraform/
-├── environments/          # Diferentes obras
-│   ├── dev/               # Obra de desenvolvimento (testes)
-│   │   ├── main.tf         # Planta principal desta obra
-│   │   ├── variables.tf    # Configurações personalizáveis
-│   │   ├── terraform.tfvars # Valores reais para esta obra
-│   │   └── backend.tf      # Onde guardar o progresso
-│   ├── staging/           # Obra pré-produção
-│   └── prod/              # Obra produção (clientes reais)
-├── modules/              # Manuais LEGO reutilizáveis
-│   ├── vpc/               # Instruções fundação de rede
-│   ├── ecs-cluster/       # Instruções plataforma containers
-│   ├── rds/               # Instruções base de dados
-│   ├── s3-bucket/         # Instruções armazenamento ficheiros
-│   └── monitoring/        # Instruções sistema monitorização
-├── shared/               # Ferramentas e dados comuns
-│   ├── data-sources.tf    # Informação de recursos AWS existentes
-│   └── locals.tf          # Valores calculados e atalhos
-└── scripts/              # Ferramentas automação
-    ├── deploy.ps1         # Script deployment automático
-    └── validate.ps1       # Script verificação qualidade
+├── environments/          # Different construction sites
+│   ├── dev/               # Development site (testing)
+│   │   ├── main.tf         # Main blueprint for this site
+│   │   ├── variables.tf    # Customizable settings
+│   │   ├── terraform.tfvars # Actual values for this site
+│   │   └── backend.tf      # Where to save progress
+│   ├── staging/           # Pre-production site
+│   └── prod/              # Production site (real customers)
+├── modules/              # Reusable LEGO instruction manuals
+│   ├── vpc/               # Network foundation instructions
+│   ├── ecs-cluster/       # Container platform instructions
+│   ├── rds/               # Database instructions
+│   ├── s3-bucket/         # File storage instructions
+│   └── monitoring/        # Monitoring system instructions
+├── shared/               # Common tools and data
+│   ├── data-sources.tf    # Info about existing AWS resources
+│   └── locals.tf          # Calculated values and shortcuts
+└── scripts/              # Automation tools
+    ├── deploy.ps1         # Automatic deployment script
+    └── validate.ps1       # Quality verification script
 ```
 
-### 🎯 Porquê Esta Estrutura?
+### 🎯 Why This Structure?
 ```
-📁 environments/  = 🏗️ Diferentes obras de construção
-📁 modules/       = 🧩 Manuais LEGO reutilizáveis  
-📁 shared/        = 🔧 Ferramentas e dados comuns
-📁 scripts/       = 🤖 Robôs de automação
+📁 environments/  = 🏗️ Different construction sites
+📁 modules/       = 🧩 Reusable LEGO manuals  
+📁 shared/        = 🔧 Common tools and data
+📁 scripts/       = 🤖 Automation robots
 ```
 
 ## 🧩 Enterprise Terraform Modules
 
-### Módulo VPC - A Fundação da Rede
+### VPC Module - The Network Foundation
 
-**O módulo VPC é como a planta elétrica e canalização de um edifício.** Antes de poderes meter escritórios, salas de reunião, ou equipamento, precisas da infraestrutura básica.
+**The VPC module is like the electrical and plumbing blueprint of a building.** Before you can put in offices, meeting rooms, or equipment, you need the basic infrastructure.
 
-#### Perceber Endereços IP e Redes
+#### Understanding IP Addresses and Networks
 
-**Antes de mergulharmos no código, precisas perceber como funcionam os endereços de rede.**
+**Before we dive into code, you need to understand how network addresses work.**
 
-##### O que são estes endereços 10.0.0.0?
+##### What are these 10.0.0.0 addresses?
 
-**São endereços IP privados - como extensões telefónicas internas numa empresa.** Tal como a tua empresa pode usar extensões 1001, 1002, 1003 internamente, mas o mundo exterior liga para o número principal, os IPs privados funcionam dentro da tua rede mas não são diretamente acessíveis da internet.
+**They are private IP addresses - like internal phone extensions in a company.** Just like your company might use extensions 1001, 1002, 1003 internally, but the outside world calls the main number, private IPs work within your network but aren't directly accessible from the internet.
 
 ##### 🌍 The Three Private IP Ranges (RFC 1918)
 ```
@@ -167,148 +167,142 @@ terraform/
 └─────────────────┘  └─────────────────┘  └─────────────────┘
 ```
 
-**🎯 Porquê 10.0.0.0 Ganha?**
+**🎯 Why 10.0.0.0 Wins?**
 ```
-🚀 ESPAÇO GIGANTE = Nunca ficas sem IPs
-🧠 FÁCIL MEMÓRIA  = Simples de lembrar  
-🏆 PADRÃO INDÚST  = Netflix, Google, Amazon usam
+🚀 HUGE SPACE     = Never run out of IPs
+🧠 EASY MEMORY    = Simple to remember  
+🏆 INDUSTRY STD   = Netflix, Google, Amazon use it
 ```
 
-##### CIDR Notation - Porquê /8, /16, /24?
+##### CIDR Notation - Why /8, /16, /24?
 
-**Cada número no IP (como 10.0.1.5) ocupa 8 bits no computador.**
+**Each number in the IP (like 10.0.1.5) takes 8 bits in the computer.**
 
-**Um IP completo tem 32 bits total:**
+**A complete IP has 32 bits total:**
 ```
 10    .    0    .    1    .    5
 8 bits + 8 bits + 8 bits + 8 bits = 32 bits total
 ```
 
-**O número depois da barra (/) diz quantos bits ficam fixos:**
+**The number after the slash (/) tells how many bits stay fixed:**
 
-**10.0.0.0/8** = Primeiros 8 bits fixos = 1º número fixo (10)
+**10.0.0.0/8** = First 8 bits fixed = 1st number fixed (10)
 ```
-[10 - FIXO] . [0-255] . [0-255] . [0-255]
+[10 - FIXED] . [0-255] . [0-255] . [0-255]
    8 bits      8 bits    8 bits    8 bits
 ```
-- Podes usar: 10.0.0.1, 10.5.2.3, 10.255.255.254
-- **Total:** 16.7 milhões de endereços
+- You can use: 10.0.0.1, 10.5.2.3, 10.255.255.254
+- **Total:** 16.7 million addresses
 
-**10.0.0.0/16** = Primeiros 16 bits fixos = 2 números fixos (10.0)
+**10.0.0.0/16** = First 16 bits fixed = 2 numbers fixed (10.0)
 ```
-[10 - FIXO] . [0 - FIXO] . [0-255] . [0-255]
+[10 - FIXED] . [0 - FIXED] . [0-255] . [0-255]
    8 bits      8 bits       8 bits    8 bits
-   \_____ 16 bits fixos ____/
+   \_____ 16 bits fixed ____/
 ```
-- Podes usar: 10.0.0.1, 10.0.5.2, 10.0.255.254
-- **Total:** 65,536 endereços
+- You can use: 10.0.0.1, 10.0.5.2, 10.0.255.254
+- **Total:** 65,536 addresses
 
-**10.0.1.0/24** = Primeiros 24 bits fixos = 3 números fixos (10.0.1)
+**10.0.1.0/24** = First 24 bits fixed = 3 numbers fixed (10.0.1)
 ```
-[10 - FIXO] . [0 - FIXO] . [1 - FIXO] . [0-255]
+[10 - FIXED] . [0 - FIXED] . [1 - FIXED] . [0-255]
    8 bits      8 bits       8 bits      8 bits
-   \_________ 24 bits fixos __________/
+   \_________ 24 bits fixed __________/
 ```
-- Podes usar: 10.0.1.1, 10.0.1.2, 10.0.1.254
-- **Total:** 256 endereços
+- You can use: 10.0.1.1, 10.0.1.2, 10.0.1.254
+- **Total:** 256 addresses
 
-**🧮 Agora faz sentido:**
+**🧮 Now it makes sense:**
 ```
-/8  = 8 bits fixos  = 1 número fixo  = 🐋 GIGANTE
-/16 = 16 bits fixos = 2 números fixos = 🦏 GRANDE  
-/24 = 24 bits fixos = 3 números fixos = 🐰 PEQUENO
+/8  = 8 bits fixed  = 1 number fixed  = 🐋 HUGE
+/16 = 16 bits fixed = 2 numbers fixed = 🦏 BIG  
+/24 = 24 bits fixed = 3 numbers fixed = 🐰 SMALL
 
-📐 FÓRMULA: bits ÷ 8 = números fixos
+📐 FORMULA: bits ÷ 8 = fixed numbers
 ```
 
-##### Como Dividimos a Rede (Agora Que Percebes os Bits)
+##### How We Divide the Network (Now That You Understand Bits)
 
-**Começamos com 10.0.0.0/16 e criamos pedaços mais pequenos:**
+**We start with 10.0.0.0/16 and create smaller pieces:**
 
 ```
-VPC INTEIRA: 10.0.0.0/16 (65,536 endereços disponíveis)
+ENTIRE VPC: 10.0.0.0/16 (65,536 addresses available)
 
-┌─ Público ─────────────────────────────────────┐
-│ 10.0.1.0/24 → 10.0.1.1 até 10.0.1.254       │ (256 endereços)
-│ 10.0.2.0/24 → 10.0.2.1 até 10.0.2.254       │ (256 endereços)
+┌─ Public ──────────────────────────────────────┐
+│ 10.0.1.0/24 → 10.0.1.1 to 10.0.1.254        │ (256 addresses)
+│ 10.0.2.0/24 → 10.0.2.1 to 10.0.2.254        │ (256 addresses)
 └───────────────────────────────────────────────┘
 
-┌─ Privado ─────────────────────────────────────┐
-│ 10.0.11.0/24 → 10.0.11.1 até 10.0.11.254    │ (256 endereços)
-│ 10.0.12.0/24 → 10.0.12.1 até 10.0.12.254    │ (256 endereços)
+┌─ Private ─────────────────────────────────────┐
+│ 10.0.11.0/24 → 10.0.11.1 to 10.0.11.254     │ (256 addresses)
+│ 10.0.12.0/24 → 10.0.12.1 to 10.0.12.254     │ (256 addresses)
 └───────────────────────────────────────────────┘
 
-┌─ Base de Dados ───────────────────────────────┐
-│ 10.0.21.0/24 → 10.0.21.1 até 10.0.21.254    │ (256 endereços)
-│ 10.0.22.0/24 → 10.0.22.1 até 10.0.22.254    │ (256 endereços)
+┌─ Database ────────────────────────────────────┐
+│ 10.0.21.0/24 → 10.0.21.1 to 10.0.21.254     │ (256 addresses)
+│ 10.0.22.0/24 → 10.0.22.1 to 10.0.22.254     │ (256 addresses)
 └───────────────────────────────────────────────┘
 ```
 
-**Lógica dos números:**
-- **10.0.1.x, 10.0.2.x** = Público (números baixos)
-- **10.0.11.x, 10.0.12.x** = Privado (números do meio)
-- **10.0.21.x, 10.0.22.x** = Bases de dados (números altos)
-- **Espaços vazios** = Para crescer no futuro
+**Number logic:**
+- **10.0.1.x, 10.0.2.x** = Public (low numbers)
+- **10.0.11.x, 10.0.12.x** = Private (middle numbers)
+- **10.0.21.x, 10.0.22.x** = Databases (high numbers)
+- **Empty spaces** = For future growth
 
-#### O Que Este Módulo Cria
-1. **VPC** - O teu espaço de rede (10.0.0.0/16 = 65,536 endereços)
-2. **Subnets Públicas** - Acessíveis da internet (10.0.1.0/24 = 256 endereços cada)
-3. **Subnets Privadas** - Protegidas (10.0.11.0/24 = 256 endereços cada)
-4. **Subnets de Bases de Dados** - Ultra-seguras (10.0.21.0/24 = 256 endereços cada)
-5. **Internet Gateway** - Porta principal da internet
-6. **NAT Gateways** - Saídas seguras para recursos privados
-7. **Route Tables** - Regras de direcionamento de tráfego36 endereços)
-2. **Subnets Públicas** - Acessíveis da internet (10.0.1.0/24 = 256 endereços cada)
-3. **Subnets Privadas** - Protegidas (10.0.11.0/24 = 256 endereços cada)
-4. **Subnets de Bases de Dados** - Ultra-seguras (10.0.21.0/24 = 256 endereços cada)
-5. **Internet Gateway** - Porta principal da internet
-6. **NAT Gateways** - Saídas seguras para recursos privados
-7. **Route Tables** - Regras de direcionamento de tráfego
+#### What This Module Creates
+1. **VPC** - Your network space (10.0.0.0/16 = 65,536 addresses)
+2. **Public Subnets** - Internet accessible (10.0.1.0/24 = 256 addresses each)
+3. **Private Subnets** - Protected (10.0.11.0/24 = 256 addresses each)
+4. **Database Subnets** - Ultra-secure (10.0.21.0/24 = 256 addresses each)
+5. **Internet Gateway** - Main internet door
+6. **NAT Gateways** - Secure exits for private resources
+7. **Route Tables** - Traffic routing rules
 
 
 
-#### Como o Terraform Cria a Rede (Passo a Passo Visual)
+#### How Terraform Creates the Network (Step-by-Step Visual)
 
-**🎯 OBJETIVO:** Criar uma rede com subnets organizadas automaticamente
+**🎯 GOAL:** Create a network with automatically organized subnets
 
-**📋 PASSO 1: Definir o que queremos**
+**📋 STEP 1: Define what we want**
 ```
-🏢 VPC Principal: 10.0.0.0/16 (65,536 endereços)
-🌍 Regiões AWS: eu-west-1a, eu-west-1b, eu-west-1c
-📊 Quantas zonas: 3
+🏢 Main VPC: 10.0.0.0/16 (65,536 addresses)
+🌍 AWS Regions: eu-west-1a, eu-west-1b, eu-west-1c
+📊 How many zones: 3
 ```
 
-**🧮 PASSO 2: Terraform calcula os IPs automaticamente**
+**🧮 STEP 2: Terraform calculates IPs automatically**
 ```
-Para cada zona (1, 2, 3), criar:
+For each zone (1, 2, 3), create:
 
-🌐 PÚBLICO:
-   Zona 1 → 10.0.1.0/24  (10.0.1.1 até 10.0.1.254)
-   Zona 2 → 10.0.2.0/24  (10.0.2.1 até 10.0.2.254) 
-   Zona 3 → 10.0.3.0/24  (10.0.3.1 até 10.0.3.254)
+🌐 PUBLIC:
+   Zone 1 → 10.0.1.0/24  (10.0.1.1 to 10.0.1.254)
+   Zone 2 → 10.0.2.0/24  (10.0.2.1 to 10.0.2.254) 
+   Zone 3 → 10.0.3.0/24  (10.0.3.1 to 10.0.3.254)
 
-🔒 PRIVADO:
-   Zona 1 → 10.0.11.0/24 (10.0.11.1 até 10.0.11.254)
-   Zona 2 → 10.0.12.0/24 (10.0.12.1 até 10.0.12.254)
-   Zona 3 → 10.0.13.0/24 (10.0.13.1 até 10.0.13.254)
+🔒 PRIVATE:
+   Zone 1 → 10.0.11.0/24 (10.0.11.1 to 10.0.11.254)
+   Zone 2 → 10.0.12.0/24 (10.0.12.1 to 10.0.12.254)
+   Zone 3 → 10.0.13.0/24 (10.0.13.1 to 10.0.13.254)
 
-💾 BASE DE DADOS:
-   Zona 1 → 10.0.21.0/24 (10.0.21.1 até 10.0.21.254)
-   Zona 2 → 10.0.22.0/24 (10.0.22.1 até 10.0.22.254)
-   Zona 3 → 10.0.23.0/24 (10.0.23.1 até 10.0.23.254)
-```
-
-**🏗️ PASSO 3: Terraform constrói tudo**
-```
-1️⃣ Cria a VPC (10.0.0.0/16)
-2️⃣ Cria 9 subnets (3 públicas + 3 privadas + 3 databases)
-3️⃣ Cria Internet Gateway (porta da internet)
-4️⃣ Cria 3 NAT Gateways (saídas seguras)
-5️⃣ Cria Route Tables (regras de tráfego)
-6️⃣ Liga tudo junto
+💾 DATABASE:
+   Zone 1 → 10.0.21.0/24 (10.0.21.1 to 10.0.21.254)
+   Zone 2 → 10.0.22.0/24 (10.0.22.1 to 10.0.22.254)
+   Zone 3 → 10.0.23.0/24 (10.0.23.1 to 10.0.23.254)
 ```
 
-**🎉 RESULTADO FINAL:**
+**🏗️ STEP 3: Terraform builds everything**
+```
+1️⃣ Creates the VPC (10.0.0.0/16)
+2️⃣ Creates 9 subnets (3 public + 3 private + 3 database)
+3️⃣ Creates Internet Gateway (internet door)
+4️⃣ Creates 3 NAT Gateways (secure exits)
+5️⃣ Creates Route Tables (traffic rules)
+6️⃣ Connects everything together
+```
+
+**🎉 FINAL RESULT:**
 ```
         🌐 INTERNET
            |
@@ -317,30 +311,30 @@ Para cada zona (1, 2, 3), criar:
     ┌─────────────────┐
     │   VPC 10.0.0.0/16   │
     │                 │
-    │ 🌍 PÚBLICO      │ 🔒 PRIVADO     │ 💾 DATABASES
+    │ 🌍 PUBLIC      │ 🔒 PRIVATE     │ 💾 DATABASES
     │ 10.0.1.0/24     │ 10.0.11.0/24   │ 10.0.21.0/24
     │ 10.0.2.0/24     │ 10.0.12.0/24   │ 10.0.22.0/24
     │ 10.0.3.0/24     │ 10.0.13.0/24   │ 10.0.23.0/24
     └─────────────────┘
 ```
 
-**💡 A MAGIA:** O Terraform faz isto tudo automaticamente com algumas linhas de código!
+**💡 THE MAGIC:** Terraform does all this automatically with just a few lines of code!
 
-#### Código Terraform Simplificado
+#### Simplified Terraform Code
 
 ```hcl
-# 1️⃣ Criar a VPC principal
+# 1️⃣ Create the main VPC
 resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"  # O nosso espaço de rede
+  cidr_block = "10.0.0.0/16"  # Our network space
   
   tags = {
-    Name = "minha-vpc"
+    Name = "my-vpc"
   }
 }
 
-# 2️⃣ Criar subnets públicas (uma por zona)
+# 2️⃣ Create public subnets (one per zone)
 resource "aws_subnet" "public" {
-  count = 3  # Criar 3 subnets
+  count = 3  # Create 3 subnets
   
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index + 1}.0/24"  # 10.0.1.0, 10.0.2.0, 10.0.3.0
@@ -351,9 +345,9 @@ resource "aws_subnet" "public" {
   }
 }
 
-# 3️⃣ Criar subnets privadas (uma por zona)
+# 3️⃣ Create private subnets (one per zone)
 resource "aws_subnet" "private" {
-  count = 3  # Criar 3 subnets
+  count = 3  # Create 3 subnets
   
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index + 11}.0/24"  # 10.0.11.0, 10.0.12.0, 10.0.13.0
@@ -365,7 +359,7 @@ resource "aws_subnet" "private" {
 }
 ```
 
-**🔥 ISTO É TUDO!** Com este código simples, o Terraform cria toda a infraestrutura de rede!
+**🔥 THAT'S IT!** With this simple code, Terraform creates the entire network infrastructure!
           # IP range for your network (e.g., 10.0.0.0/16)
   enable_dns_hostnames = true                  # Allow resources to have DNS names
   enable_dns_support   = true                  # Enable DNS resolution
