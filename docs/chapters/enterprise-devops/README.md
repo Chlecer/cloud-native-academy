@@ -1,52 +1,64 @@
-# 🏢 Enterprise DevOps Excellence - Complete Fortune 500 Tech Stack
+# Enterprise DevOps Engineering
 
-> **"The Ultimate Enterprise DevOps Curriculum" - Master the exact tools and patterns used by Fortune 500 companies**
+> **Master the Tools and Practices of High-Performing Engineering Organizations**
 
-## 🎯 Mission: Become the Enterprise DevOps Expert Every Company Needs
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](../../CONTRIBUTING.md)
 
-This comprehensive curriculum covers the **complete** technology stack used by leading enterprises, with real-world examples from Netflix, Goldman Sachs, Airbnb, Samsung, and other Fortune 500 companies.
+## 🎓 Overview
 
-## 📚 Complete Enterprise DevOps Curriculum
+This learning path transforms you into a professional DevOps engineer, teaching you the exact practices and tools used by top technology companies. You'll gain hands-on experience with the same tooling used at scale by industry leaders like Netflix, Google, and Amazon.
 
-### 🏗️ [AWS Enterprise Architecture](./01-aws-architecture/) ✅
-**Master AWS at Fortune 500 scale**
-- ✅ ECS/EKS production deployments with auto-scaling
-- ✅ S3 enterprise data lakes with lifecycle policies
-- ✅ IAM enterprise security with RBAC
-- ✅ CloudWatch enterprise monitoring with custom metrics
-- ✅ Lambda serverless architecture with event-driven patterns
-- ✅ Real examples: Netflix (200M+ users), Airbnb (4M+ hosts)
-- ✅ PowerShell automation scripts included
+## 🚀 Why This Matters
 
-### 🏗️ [Terraform Enterprise Patterns](./02-terraform-enterprise/) ✅
-**Infrastructure as Code mastery**
-- ✅ Modular Terraform architecture with reusable modules
-- ✅ Multi-environment management (dev/staging/prod)
-- ✅ Remote state management with S3 + DynamoDB
-- ✅ Enterprise governance with Sentinel policies
-- ✅ Cost optimization with resource tagging
-- ✅ Real examples: HashiCorp (10k+ resources), Spotify (multi-cloud)
-- ✅ Complete PowerShell automation suite
+In today's fast-paced technology landscape, the ability to deliver software quickly and reliably is a competitive advantage. This curriculum is designed to give you the skills that top companies are looking for in their engineering teams.
 
-### 🚀 [GitLab CI/CD Mastery](./03-gitlab-cicd/) ✅
-**Enterprise pipeline excellence**
-- ✅ Multi-language pipelines (Java Spring Boot & .NET Core)
-- ✅ Security integration (SAST/DAST/secrets detection)
-- ✅ Multi-stage deployments with approval gates
-- ✅ Blue-green deployment strategies
-- ✅ Performance optimization and caching
-- ✅ Real examples: Goldman Sachs (50k pipelines), T-Mobile (50M users)
-- ✅ Enterprise PowerShell tooling
+## 🏗️ Core Modules
 
-### ☸️ [ArgoCD GitOps Excellence](./04-argocd-gitops/) ✅
-**Continuous deployment mastery**
-- ✅ Multi-cluster management with RBAC
-- ✅ High availability setup with 3+ replicas
-- ✅ Progressive delivery with Argo Rollouts
-- ✅ Disaster recovery and backup strategies
-- ✅ Enterprise security with LDAP/OIDC
-- ✅ Real examples: Netflix (2.5k microservices), Intuit (10k apps)
-- ✅ Complete automation scripts
+### 1. [Cloud Infrastructure Architecture](./01-aws-architecture/)
+**Design and implement cloud-native infrastructure**
+- Multi-account AWS organization structure
+- Infrastructure as Code (IaC) best practices
+- Network topology and security patterns
+- High availability and disaster recovery
+- Cost optimization strategies
+- Real-world case studies from top enterprises
+
+### 2. [Infrastructure as Code with Terraform](./02-terraform-enterprise/)
+**Enterprise-grade infrastructure automation**
+- Terraform modules and workspaces
+- Policy as Code with Sentinel
+- Multi-cloud and hybrid cloud strategies
+- Secrets management and security
+- CI/CD for infrastructure changes
+- Compliance and governance
+
+### 3. [CI/CD Pipelines at Scale](./03-gitlab-cicd/)
+**Build robust software delivery pipelines**
+- Pipeline as code with GitLab CI
+- Security scanning and compliance
+- Advanced deployment strategies
+- Performance optimization
+- Self-service developer platforms
+- Monitoring and observability
+
+### 4. [GitOps with ArgoCD](./04-argocd-gitops/)
+**Modern application delivery**
+- GitOps principles and practices
+- Multi-cluster management
+- Progressive delivery techniques
+- Policy-based automation
+- Security and compliance
+- Disaster recovery strategies
+
+### 5. [Platform Engineering](./05-platform-engineering/)
+**Building developer platforms**
+- Internal developer platforms (IDP)
+- Self-service capabilities
+- Standardization and governance
+- Developer experience (DevEx)
+- Platform observability
+- Cost management
 
 ### 📊 [Datadog Observability](./05-datadog-observability/) ✅
 **Enterprise monitoring excellence**

@@ -1,33 +1,108 @@
-# 🔐 Security - Protect Your Applications
+# Cloud-Native Security Engineering
 
-> **Security practices that prevent real-world attacks**
+> **Comprehensive Security Practices for Modern Cloud-Native Applications**
 
-## 🎯 What You'll Master
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](../../CONTRIBUTING.md)
 
-- ✅ **Authentication & Authorization** (OAuth, JWT, RBAC)
-- ✅ **API Security** (rate limiting, input validation)
-- ✅ **Infrastructure Security** (secrets management, network security)
-- ✅ **Container Security** (image scanning, runtime protection)
-- ✅ **Compliance** (GDPR, SOC2, PCI-DSS)
-- ✅ **Incident Response** (detection, containment, recovery)
+## 🛡️ Overview
 
-## 📚 Learning Path
+This learning path provides a comprehensive approach to securing cloud-native applications and infrastructure. You'll learn security best practices used by leading organizations to protect their systems against modern threats.
 
-### 🔑 [Chapter 1: Authentication & Authorization](./01-auth-systems/)
-- OAuth 2.0 and OpenID Connect
-- JWT tokens (when and how to use)
-- Role-Based Access Control (RBAC)
-- Multi-factor authentication
+## 🎯 Learning Outcomes
 
-### 🛡️ [Chapter 2: API Security](./02-api-security/)
-- Input validation and sanitization
-- Rate limiting and throttling
-- API keys and token management
-- CORS and security headers
+By completing this path, you'll be able to:
+- Implement robust authentication and authorization systems
+- Secure APIs and microservices architectures
+- Protect cloud infrastructure and containerized workloads
+- Ensure compliance with industry standards and regulations
+- Respond effectively to security incidents
 
-### 🏰 [Chapter 3: Infrastructure Security](./03-infrastructure-security/)
-- Secrets management (Vault, K8s secrets)
-- Network security and firewalls
+## 🏗️ Security Domains
+
+### 1. [Identity and Access Management (IAM)](./01-auth-systems/)
+**Secure access to your systems and data**
+- Authentication protocols (OAuth 2.0, OpenID Connect, SAML)
+- JSON Web Tokens (JWT) and session management
+- Role-Based Access Control (RBAC) and Attribute-Based Access Control (ABAC)
+- Multi-factor authentication (MFA) and passwordless authentication
+- Identity federation and single sign-on (SSO)
+
+### 2. [API and Application Security](./02-api-security/)
+**Protect your applications from common vulnerabilities**
+- OWASP Top 10 security risks
+- API security best practices
+- Input validation and output encoding
+- Security headers and Content Security Policy (CSP)
+- Secure API design patterns
+
+### 3. [Cloud Infrastructure Security](./03-infrastructure-security/)
+**Secure your cloud environments**
+- Cloud security best practices (AWS/Azure/GCP)
+- Network security and segmentation
+- Secrets management (HashiCorp Vault, AWS Secrets Manager)
+- Infrastructure as Code (IaC) security
+- Container and Kubernetes security
+
+### 4. [Data Protection and Privacy](./04-data-protection/)
+**Safeguard sensitive information**
+- Data classification and protection
+- Encryption at rest and in transit
+- Key management
+- Data loss prevention (DLP)
+- Privacy regulations (GDPR, CCPA, etc.)
+
+### 5. [Threat Detection and Response](./05-threat-detection/)
+**Identify and respond to security incidents**
+- Security monitoring and logging
+- Intrusion detection and prevention systems (IDS/IPS)
+- Security Information and Event Management (SIEM)
+- Incident response planning and execution
+- Digital forensics
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Basic understanding of cloud computing concepts
+- Familiarity with Linux/Unix systems
+- Knowledge of networking fundamentals
+- Experience with container technologies (Docker, Kubernetes) is a plus
+
+### Learning Path
+
+1. Start with [Identity and Access Management](./01-auth-systems/)
+2. Proceed to [API and Application Security](./02-api-security/)
+3. Move on to [Cloud Infrastructure Security](./03-infrastructure-security/)
+4. Study [Data Protection and Privacy](./04-data-protection/)
+5. Conclude with [Threat Detection and Response](./05-threat-detection/)
+
+## 🛠️ Tools and Technologies
+
+- **Authentication**: Keycloak, Okta, Auth0, AWS Cognito
+- **Secrets Management**: HashiCorp Vault, AWS Secrets Manager, Azure Key Vault
+- **Container Security**: Aqua Security, Sysdig, Falco
+- **SIEM**: Splunk, ELK Stack, Azure Sentinel
+- **Vulnerability Scanning**: Trivy, Snyk, Clair
+
+## 📚 Resources
+
+- [OWASP Security Guidelines](https://owasp.org/)
+- [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
+- [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks/)
+- [Cloud Security Alliance](https://cloudsecurityalliance.org/)
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contribution Guidelines](../../CONTRIBUTING.md) for details.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+
+---
+
+**Next Step:** [Identity and Access Management →](./01-auth-systems/)
 - SSL/TLS configuration
 - Security scanning and monitoring
 

@@ -7,7 +7,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: webapp    # Seleciona pods independente da versão
+    app: webapp    # Selects pods regardless of version
   ports:
   - port: 80
     targetPort: 80
